@@ -5,6 +5,7 @@ module Day5 where
 import qualified Data.Map.Strict as M
 import qualified Data.Text       as T (Text, lines, pack, split, splitOn,
                                        unpack)
+import qualified Data.Text.IO    as TIO (readFile)
 
 type Point = (Int, Int)
 type Line = (Point, Point)
@@ -12,8 +13,8 @@ type Line = (Point, Point)
 
 main :: IO ()
 main = do
-    input <- readFile "input.txt"
-    let coords = map (T.splitOn " -> ") . T.lines $ T.pack input
+    input <- TIO.readFile "input.txt"
+    let coords = map (T.splitOn " -> ") . T.lines $ input
         lines = map makeLine coords
         p1 = getCount . pointsMap $ concatMap getPoints1 lines
         p2 = getCount . pointsMap $ concatMap getPoints2 lines
@@ -61,12 +62,10 @@ getPoints2 ((x, y), (x', y')) =
         (EQ, GT) -> zip (repeat x) [y .. y']
         (GT, EQ) -> zip [x .. x'] (repeat y)
         (LT, EQ) -> zip [x' .. x] (repeat y)
-
         (GT, LT) -> zip [x .. x'] [y, y - 1 .. y']
         (LT, LT) -> zip [x, x - 1 .. x'] [y, y - 1 .. y']
         (LT, GT) -> zip [x, x - 1 .. x'] [y .. y']
         (GT, GT) -> zip [x .. x'] [y .. y']
-
         _        -> [(x, y)]
     where
         (xOrd, yOrd) = (compare x' x, compare y' y)
